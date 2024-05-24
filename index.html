@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub Pages Repositories</title>
 </head>
+
 <body>
     <h1>GitHub Pages Repositories</h1>
     <ul id="repo-list"></ul>
 
     <script>
         const username = 'omartins-zs';
-        const token = ''; // Optional
+        const token = ''; // Opcional
 
         async function fetchWithToken(url, token) {
             const headers = {
@@ -34,10 +36,13 @@
         }
 
         async function checkGitHubPages(repo, username, token) {
-            const pagesUrl = `https://api.github.com/repos/${username}/${repo.name}/pages`;
+            const pagesUrl = `https://${username}.github.io/${repo.name}/`;
             try {
-                const data = await fetchWithToken(pagesUrl, token);
-                return data.html_url || null;
+                const response = await fetch(pagesUrl);
+                if (response.status === 200) {
+                    return pagesUrl;
+                }
+                return null;
             } catch (error) {
                 return null;
             }
@@ -51,9 +56,9 @@
                     const pagesUrl = await checkGitHubPages(repo, username, token);
                     const listItem = document.createElement('li');
                     if (pagesUrl) {
-                        listItem.textContent = `${repo.name} has GitHub Pages configured: ${pagesUrl}`;
+                        listItem.innerHTML = `${repo.name} has GitHub Pages configured: <a href="${pagesUrl}" target="_blank">${pagesUrl}</a>`;
                     } else {
-                        listItem.textContent = `${repo.name} does not have GitHub Pages configured`;
+                        listItem.textContent = `${repo.name} does not have GitHub Pages configured or returned 404`;
                     }
                     repoListElement.appendChild(listItem);
                 }
@@ -65,4 +70,5 @@
         listGitHubPagesRepos();
     </script>
 </body>
+
 </html>
