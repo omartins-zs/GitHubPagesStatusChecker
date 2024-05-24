@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Pages Repositories</title>
+</head>
+<body>
+    <h1>GitHub Pages Repositories</h1>
+    <ul id="repo-list"></ul>
+
+    <script>
+        const username = 'omartins-zs';
+        const token = ''; // Optional
+
+        async function fetchWithToken(url, token) {
+            const headers = {
+                'Accept': 'application/vnd.github.v3+json',
+                'User-Agent': 'JavaScript',
+            };
+            if (token) {
+                headers['Authorization'] = `token ${token}`;
+            }
+            const response = await fetch(url, { headers });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        }
+
+        async function getRepos(username, token) {
+            const url = `https://api.github.com/users/${username}/repos`;
+            return await fetchWithToken(url, token);
+        }
+
+        async function checkGitHubPages(repo, username, token) {
+            const pagesUrl = `https://api.github.com/repos/${username}/${repo.name}/pages`;
+            try {
+                const data = await fetchWithToken(pagesUrl, token);
+                return data.html_url || null;
+            } catch (error) {
+                return null;
+            }
+        }
+
+        async function listGitHubPagesRepos() {
+            const repoListElement = document.getElementById('repo-list');
+            try {
+                const repos = await getRepos(username, token);
+                for (const repo of repos) {
+                    const pagesUrl = await checkGitHubPages(repo, username, token);
+                    const listItem = document.createElement('li');
+                    if (pagesUrl) {
+                        listItem.textContent = `${repo.name} has GitHub Pages configured: ${pagesUrl}`;
+                    } else {
+                        listItem.textContent = `${repo.name} does not have GitHub Pages configured`;
+                    }
+                    repoListElement.appendChild(listItem);
+                }
+            } catch (error) {
+                console.error('Error fetching repositories:', error);
+            }
+        }
+
+        listGitHubPagesRepos();
+    </script>
+</body>
+</html>
