@@ -35,16 +35,13 @@
             return await fetchWithToken(url, token);
         }
 
-        async function checkGitHubPages(repo, username, token) {
+        async function checkGitHubPages(repo, username) {
             const pagesUrl = `https://${username}.github.io/${repo.name}/`;
             try {
-                const response = await fetch(pagesUrl);
-                if (response.status === 200) {
-                    return pagesUrl;
-                }
-                return null;
+                const response = await fetch(pagesUrl, { method: 'HEAD' });
+                return { url: pagesUrl, status: response.status };
             } catch (error) {
-                return null;
+                return { url: pagesUrl, status: 'Error' };
             }
         }
 
@@ -53,12 +50,14 @@
             try {
                 const repos = await getRepos(username, token);
                 for (const repo of repos) {
-                    const pagesUrl = await checkGitHubPages(repo, username, token);
+                    const result = await checkGitHubPages(repo, username);
                     const listItem = document.createElement('li');
-                    if (pagesUrl) {
-                        listItem.innerHTML = `${repo.name} has GitHub Pages configured: <a href="${pagesUrl}" target="_blank">${pagesUrl}</a>`;
+                    if (result.status === 200) {
+                        listItem.innerHTML = `${repo.name} has GitHub Pages configured: <a href="${result.url}" target="_blank">${result.url}</a>`;
+                    } else if (result.status === 404) {
+                        listItem.textContent = `${repo.name} does not have GitHub Pages configured (404)`;
                     } else {
-                        listItem.textContent = `${repo.name} does not have GitHub Pages configured or returned 404`;
+                        listItem.textContent = `${repo.name} has an error accessing GitHub Pages: ${result.status}`;
                     }
                     repoListElement.appendChild(listItem);
                 }
@@ -70,5 +69,4 @@
         listGitHubPagesRepos();
     </script>
 </body>
-
 </html>
