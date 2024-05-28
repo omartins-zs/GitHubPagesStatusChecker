@@ -33,10 +33,6 @@
             color: #dc3545;
         }
 
-        .not-found-view {
-            color: #dc3545;
-        }
-
         .yellow {
             color: #ffc107;
         }
@@ -67,8 +63,16 @@
         }
 
         async function getRepos(username, token) {
-            const url = `https://api.github.com/users/${username}/repos`;
-            return await fetchWithToken(url, token);
+            let repos = [];
+            let page = 1;
+            while (true) {
+                const url = `https://api.github.com/users/${username}/repos?per_page=100&page=${page}`;
+                const result = await fetchWithToken(url, token);
+                if (result.length === 0) break;
+                repos = repos.concat(result);
+                page++;
+            }
+            return repos;
         }
 
         async function checkGitHubPages(repo, username) {
