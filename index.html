@@ -33,7 +33,11 @@
             color: #dc3545;
         }
 
-        .not-found.yellow {
+        .not-found-view {
+            color: #dc3545;
+        }
+
+        .yellow {
             color: #ffc107;
         }
     </style>
@@ -71,9 +75,9 @@
             const pagesUrl = `https://${username}.github.io/${repo.name}/`;
             try {
                 const response = await fetch(pagesUrl, { method: 'HEAD' });
-                return { url: pagesUrl, status: response.status };
+                return { url: pagesUrl, status: response.status, hasPages: repo.has_pages };
             } catch (error) {
-                return { url: pagesUrl, status: 404 };
+                return { url: pagesUrl, status: 404, hasPages: repo.has_pages };
             }
         }
 
@@ -86,24 +90,25 @@
                     const listItem = document.createElement('li');
                     listItem.classList.add('repo-item');
                     const repoName = document.createElement('h3');
-                    repoName.textContent = `${repo.name} `;
-                    const statusCode = document.createElement('span');
-                    statusCode.textContent = getStatusText(result.status);
-                    statusCode.classList.add(getStatusClass(result.status));
-                    repoName.appendChild(statusCode);
+                    repoName.textContent = repo.name;
                     listItem.appendChild(repoName);
+                    const statusDescription = document.createElement('h4');
+                    statusDescription.textContent = `${result.status} (${getStatusText(result.status)})`;
+                    statusDescription.classList.add(getStatusClass(result.status, result.hasPages));
+                    listItem.appendChild(statusDescription);
                     const repoInfo = document.createElement('div');
                     repoInfo.classList.add('repo-info');
                     if (result.status === 200) {
                         repoInfo.innerHTML = `Projeto hospedado no GitHub Pages<br>URL: <a href="${result.url}" target="_blank">${result.url}</a>`;
                     } else if (result.status === 404) {
-                        repoInfo.textContent = 'Projeto não hospedado';
+                        if (result.hasPages) {
+                            repoInfo.textContent = 'Projeto Hospedado - Arquivo não encontrado';
+                            statusDescription.classList.add('not-found', 'not-found-view', 'yellow');
+                        } else {
+                            repoInfo.textContent = 'Projeto não hospedado';
+                        }
                     } else {
                         repoInfo.textContent = `Erro ao acessar o GitHub Pages: ${result.status}`;
-                    }
-                    if (result.status === 404 && result.url !== `${result.url}`) {
-                        listItem.classList.add('yellow');
-                        repoInfo.textContent = 'Projeto Hospedado - Arquivo não encontrado';
                     }
                     listItem.appendChild(repoInfo);
                     repoListElement.appendChild(listItem);
@@ -116,20 +121,20 @@
         function getStatusText(statusCode) {
             switch (statusCode) {
                 case 200:
-                    return ' (Ok)';
+                    return 'Ok';
                 case 404:
-                    return ' (Not Found)';
+                    return 'Not Found';
                 default:
-                    return ' (Error)';
+                    return 'Error';
             }
         }
 
-        function getStatusClass(statusCode) {
+        function getStatusClass(statusCode, hasPages) {
             switch (statusCode) {
                 case 200:
                     return 'success';
                 case 404:
-                    return 'not-found';
+                    return hasPages ? 'not-found' : 'not-found';
                 default:
                     return 'error';
             }
