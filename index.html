@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -51,20 +50,35 @@
         .yellow {
             color: #ffc107;
         }
+
+        .form-control {
+            background-color: #444;
+            color: white;
+        }
     </style>
 </head>
 
 <body>
     <div class="container-fluid">
-
         <h1 class="display-4 text-center">GitHub Pages Status Checker</h1>
 
+        <div class="form-container my-3">
+            <div class="form-group">
+                <label for="github-username">GitHub Username</label>
+                <input type="text" class="form-control" id="github-username" placeholder="Digite seu usuario do GitHub">
+            </div>
+            <div class="form-group">
+                <label for="github-token">GitHub Token (Optional)</label>
+                <input type="text" class="form-control" id="github-token"
+                    placeholder="Digite seu GitHub Token (Opcional)">
+            </div>
+            <button class="btn btn-success" onclick="listGitHubPagesRepos()">Verificar Repositórios</button>
+        </div>
+
         <ul id="repo-list" class="list-unstyled"></ul>
+    </div>
 
     <script>
-        const username = 'omartins-zs';
-        const token = ''; // Opcional
-
         async function fetchWithToken(url, token) {
             const headers = {
                 'Accept': 'application/vnd.github.v3+json',
@@ -105,6 +119,16 @@
 
         async function listGitHubPagesRepos() {
             const repoListElement = document.getElementById('repo-list');
+            repoListElement.innerHTML = ''; // Clear previous results
+
+            const username = document.getElementById('github-username').value;
+            const token = document.getElementById('github-token').value;
+
+            if (!username) {
+                alert('Please enter a GitHub username.');
+                return;
+            }
+
             try {
                 const repos = await getRepos(username, token);
                 for (const repo of repos) {
@@ -161,8 +185,6 @@
                     return 'error';
             }
         }
-
-        listGitHubPagesRepos();
     </script>
 </body>
 
