@@ -17,14 +17,18 @@
         rel="stylesheet">
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         /* Estilos personalizados */
         body {
             font-family: "Poppins", sans-serif;
-            margin: 0;
-            padding: 0;
             background: #2d2d44;
             color: white;
-            min-height: 100vh;
+            /* min-height: 100vh; */
         }
 
         .repo-item {
@@ -121,20 +125,21 @@
             display: none;
         }
 
-        .card h5, .card h6, .card p {
+        .card h5,
+        .card h6,
+        .card p {
             color: white;
         }
 
-        .link_url{
+        .link_url {
             color: #0056b3 !important;
         }
-
     </style>
 </head>
 
 <body>
     <div class="container-fluid">
-        <h1 class="display-4 text-center">GitHub Pages Status Checker</h1>
+        <h1 class="display-4 text-center my-5">GitHub Pages Status Checker</h1>
 
         <div class="form-container">
             <div class="form-group">
@@ -143,7 +148,8 @@
             </div>
             <div class="form-group">
                 <label for="github-token">GitHub Token (Optional)</label>
-                <input type="text" class="form-control" id="github-token" placeholder="Digite seu GitHub Token (Opcional)">
+                <input type="text" class="form-control" id="github-token"
+                    placeholder="Digite seu GitHub Token (Opcional)">
             </div>
             <button class="btn btn-success" onclick="listGitHubPagesRepos()">Verificar Repositórios</button>
         </div>
@@ -201,18 +207,18 @@
             const repoListElement = document.getElementById('repo-list');
             const loadingSpinner = document.querySelector('.loading-spinner-rolling-circle');
             const loadingText = document.querySelector('.loading-text');
-            repoListElement.innerHTML = ''; // Clear previous results
+            repoListElement.innerHTML = '';
 
             const username = document.getElementById('github-username').value;
             const token = document.getElementById('github-token').value;
 
             if (!username) {
-                alert('Please enter a GitHub username.');
+                alert('Por favor, insira um nome de usuário do GitHub.');
                 return;
             }
 
-            loadingSpinner.style.display = 'block'; // Show spinner
-            loadingText.style.display = 'block'; // Show loading text
+            loadingSpinner.style.display = 'block';
+            loadingText.style.display = 'block';
 
             try {
                 const repos = await getRepos(username, token);
@@ -263,8 +269,8 @@
             } catch (error) {
                 console.error('Error fetching repositories:', error);
             } finally {
-                loadingSpinner.style.display = 'none'; // Hide spinner
-                loadingText.style.display = 'none'; // Hide loading text
+                loadingSpinner.style.display = 'none';
+                loadingText.style.display = 'none';
             }
         }
 
