@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub Pages Repositories</title>
 
-    <!--Bootstrap CSS -->
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
         integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
 
@@ -24,7 +24,7 @@
             padding: 0;
             background: #2d2d44;
             color: white;
-            height: 100vh;
+            min-height: 100vh;
         }
 
         .repo-item {
@@ -36,19 +36,19 @@
         }
 
         .success {
-            color: #28a745;
+            color: #28a745 !important;
         }
 
         .error {
-            color: #dc3545;
+            color: #dc3545 !important;
         }
 
         .not-found {
-            color: #dc3545;
+            color: #dc3545 !important;
         }
 
         .yellow {
-            color: #ffc107;
+            color: #ffc107 !important;
         }
 
         .form-container {
@@ -120,6 +120,15 @@
             z-index: 1001;
             display: none;
         }
+
+        .card h5, .card h6, .card p {
+            color: white;
+        }
+
+        .link_url{
+            color: #0056b3 !important;
+        }
+
     </style>
 </head>
 
@@ -139,7 +148,7 @@
             <button class="btn btn-success" onclick="listGitHubPagesRepos()">Verificar Repositórios</button>
         </div>
 
-        <ul id="repo-list" class="list-unstyled"></ul>
+        <div class="row" id="repo-list"></div>
 
         <div class="loading-spinner-rolling-circle">
             <div class="loading-image">
@@ -211,30 +220,44 @@
 
                 results.forEach((result, index) => {
                     const repo = repos[index];
-                    const listItem = document.createElement('li');
-                    listItem.classList.add('repo-item');
-                    const repoName = document.createElement('h3');
+                    const listItem = document.createElement('div');
+                    listItem.classList.add('col-md-4', 'repo-item');
+
+                    const card = document.createElement('div');
+                    card.classList.add('card', 'bg-secondary', 'text-white', 'h-100');
+
+                    const cardBody = document.createElement('div');
+                    cardBody.classList.add('card-body');
+
+                    const repoName = document.createElement('h5');
+                    repoName.classList.add('card-title');
                     repoName.textContent = repo.name;
-                    listItem.appendChild(repoName);
-                    const statusDescription = document.createElement('h4');
+
+                    const statusDescription = document.createElement('h6');
+                    statusDescription.classList.add('card-subtitle', 'mb-2');
                     statusDescription.textContent = `${result.status} (${getStatusText(result.status)})`;
                     statusDescription.classList.add(getStatusClass(result.status, result.hasPages));
-                    listItem.appendChild(statusDescription);
-                    const repoInfo = document.createElement('div');
-                    repoInfo.classList.add('repo-info');
+
+                    const repoInfo = document.createElement('p');
+                    repoInfo.classList.add('card-text');
                     if (result.status === 200) {
-                        repoInfo.innerHTML = `Projeto hospedado no GitHub Pages<br>URL: <a href="${result.url}" target="_blank">${result.url}</a>`;
+                        repoInfo.innerHTML = `Projeto hospedado no GitHub Pages<br>URL: <small><a href="${result.url}" target="_blank" class="link_url">${result.url}</a></small>`;
                     } else if (result.status === 404) {
                         if (result.hasPages) {
                             repoInfo.textContent = 'Projeto Hospedado - Arquivo não encontrado';
-                            statusDescription.classList.add('not-found', 'not-found-view', 'yellow');
+                            statusDescription.classList.add('not-found', 'yellow');
                         } else {
                             repoInfo.textContent = 'Projeto não hospedado';
                         }
                     } else {
                         repoInfo.textContent = `Erro ao acessar o GitHub Pages: ${result.status}`;
                     }
-                    listItem.appendChild(repoInfo);
+
+                    cardBody.appendChild(repoName);
+                    cardBody.appendChild(statusDescription);
+                    cardBody.appendChild(repoInfo);
+                    card.appendChild(cardBody);
+                    listItem.appendChild(card);
                     repoListElement.appendChild(listItem);
                 });
             } catch (error) {
