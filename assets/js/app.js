@@ -390,8 +390,16 @@ async function copyToClipboard(text) {
 
 function showToast(message, type = 'error') {
   const toast = document.createElement('div');
-  toast.className = `toast toast--${type}`;
-  toast.innerHTML = `${type === 'error' ? ICONS.alertCircle : ICONS.checkCircle}<span>${message}</span>`;
+  const borderClass = type === 'error' ? 'border-red-500/30' : 'border-emerald-500/30';
+  const iconColor = type === 'error' ? 'text-red-400' : 'text-emerald-400';
+  
+  toast.className = `toast toast--${type} flex items-center gap-3 p-3.5 bg-slate-900 border ${borderClass} rounded-xl shadow-2xl text-xs text-white max-w-sm transition duration-300`;
+  toast.style.animation = 'slideIn 0.3s ease';
+  
+  const icon = type === 'error' ? ICONS.alertCircle : ICONS.checkCircle;
+  const styledIcon = icon.replace('<svg', `<svg class="${iconColor} w-5 h-5 flex-shrink-0"`);
+  
+  toast.innerHTML = `${styledIcon}<span>${message}</span>`;
   elements.toastContainer.appendChild(toast);
 
   setTimeout(() => {
