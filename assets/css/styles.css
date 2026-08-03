@@ -54,3 +54,9 @@ body::before {
     transform: translateX(0);
   }
 }
+
+.repo-card svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
